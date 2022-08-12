@@ -1,0 +1,7 @@
+# Decrypted sops secrets
+.decrypted*
+
+# Role downloaded by ansible-galaxy
+bootstrap/roles/xanmanning.k3s
+
+.python-version

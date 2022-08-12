@@ -1,0 +1,21 @@
+# Primary node
+zidane.elwert.dev ansible_host=zidane.lan
+
+# Raspberry Pi nodes
+kupo.elwert.dev ansible_host=kupo.lan
+moguo.elwert.dev ansible_host=moguo.lan
+monty.elwert.dev ansible_host=monty.lan
+stiltzkin.elwert.dev ansible_host=stiltzkin.lan
+
+# Additional nodes
+vivi.elwert.dev ansible_host=vivi.lan
+
+[k3s_control_node]
+zidane.elwert.dev
+
+[k3s_worker_node]
+#kupo.elwert.dev
+#moguo.elwert.dev
+#monty.elwert.dev
+#stiltzkin.elwert.dev
+#vivi.elwert.dev

@@ -1,0 +1,54 @@
+#cloud-config
+
+# Set the hostname on first boot
+hostname: INSTANCE_ID
+fqdn: INSTANCE_ID.elwert.dev
+
+# update /etc/hosts according to hostname (otherwise sudo will complain)
+manage_etc_hosts: true
+
+# Set the timezone to UTC, make sure we're using UTF-8.
+timezone: Etc/UTC
+locale: en_US.UTF-8
+
+# We don't want the pi user to be created, so we set up the default user to be
+# `belak` and not `pi` or `ubuntu`.
+system_info:
+  default_user:
+    name: belak
+    gecos: Kaleb Elwert
+    primary_group: belak
+    groups: users, admin
+    sudo: ALL=(ALL) NOPASSWD:ALL
+    ssh_authorized_keys:
+      - "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIGNHMEfjGg5ek6OtbFytZ/zCSZosT8aHqHRfnufb3gIi belak@zagreus.elwert.dev"
+    ssh_import_id:
+      - gh:belak
+    passwd: "$6$wySkC6Ip.PHY8jIf$VlQmJxRUc.yIrCCB98IyKFrBqoqteRr./EYZgdWng5pXFd/YZf0qZ7u0OiFTf32ewOtnbOdyPTfVaBBhjJLyI0"
+    lock_passwd: false
+
+# Enable password authentication with the SSH daemon
+ssh_pwauth: true
+
+# Update apt database and upgrade packages on first boot
+package_update: true
+package_upgrade: true
+
+## Install additional packages on first boot
+#packages:
+#- pwgen
+#- pastebinit
+#- [libpython2.7, 2.7.3-0ubuntu3.1]
+
+# Set up the REGDOMAIN so wifi will work properly if we set it up later.
+write_files:
+- path: /etc/default/crda
+  permissions: "0644"
+  content: |
+    REGDOMAIN=US
+
+# When everything is done, issue a reboot. This will only happen on the first
+# cloud-init configuration. Note that if there is no internet connection, a
+# number of the steps in this file will be skipped.
+power_state:
+  mode: reboot

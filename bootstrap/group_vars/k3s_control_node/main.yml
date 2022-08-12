@@ -1,0 +1,16 @@
+k3s_control_node: true
+
+k3s_server:
+  # Disable Docker - this will use the default containerd CRI
+  docker: false
+  disable:
+    - traefik    # disabled so we can configure it in more detail
+    - servicelb  # disabled so we can use metallb
+  # Cluster-internal IP ranges for pods and services
+  cluster-cidr: "10.42.0.0/16"
+  service-cidr: "10.43.0.0/16"
+  kubelet-arg:
+    # Enables the kubelet to gracefully evict pods during a node shutdown
+    - "feature-gates=GracefulNodeShutdown=true"
+    # Allow k8s services to contain TCP and UDP on the same port
+    - "feature-gates=MixedProtocolLBService=true"

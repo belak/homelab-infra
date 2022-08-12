@@ -1,0 +1,93 @@
+- name: install common packages
+  apt:
+    state: present
+    pkg:
+      - aptitude
+      - build-essential
+      - curl
+      - git
+      - htop
+      - lm-sensors
+      - logrotate
+      - molly-guard
+      - mosh
+      - ncdu
+      - net-tools
+      - ntp
+      - pwgen
+      - rsync
+      - smartmontools
+      - tmux
+      - vim
+      - virtualenv
+      - virtualenvwrapper
+
+      # Common ansible packages
+      - apt-transport-https
+      - python3-apt
+      - python3-dev
+      - python3-requests
+
+      # Hardening-ish
+      - fail2ban
+
+# NOTE: all our aarch64 devices are currently raspberry pis. This may be an
+# issue later.
+- name: install additional raspi support packages
+  apt:
+    state: present
+    pkg: linux-modules-extra-raspi
+  when: ansible_architecture == "aarch64"
+
+- name: use iptables-legacy on raspi devices
+  community.general.alternatives:
+    name: '{{ item }}'
+    path: /usr/sbin/{{ item }}-legacy
+  with_items:
+  - iptables
+  - ip6tables
+  when: ansible_architecture == "aarch64"
+
+- name: ensure NTP is enabled
+  service: name=ntp state=started enabled=yes
+
+- name: ensure the clock is using UTC
+  timezone:
+    name: Etc/UTC
+    hwclock: UTC
+
+- name: ensure proper hostname is set
+  hostname:
+    name: '{{ inventory_hostname }}'
+
+- name: start fail2ban
+  service: name=fail2ban state=started enabled=yes
+
+- name: add thoughtbot signing key
+  apt_key:
+    url: http://apt.thoughtbot.com/thoughtbot.gpg.key
+    id: C31D841D55ACEC1471D22CC984D7308EBE7FEF18
+    state: present
+
+- name: add thoughtbot repo
+  apt_repository:
+    repo: 'deb http://apt.thoughtbot.com/debian/ stable main'
+    state: present
+    filename: thoughtbot
+
+- name: install rcm
+  apt: pkg=rcm state=present
+
+- name: generate ed25519 key for root
+  command : ssh-keygen -q -t ed25519 -f /root/.ssh/id_ed25519 -C "root@{{ inventory_hostname }}" -N ""
+  args:
+    creates: /root/.ssh/id_ed25519
+
+- name: disable unnecessary services
+  service:
+    name: '{{ item }}'
+    state: stopped
+    enabled: no
+  with_items:
+    - snapd
+    - multipathd

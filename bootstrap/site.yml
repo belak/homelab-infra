@@ -1,0 +1,9 @@
+- hosts: all
+  roles:
+    - common
+  tags: common
+
+- hosts: all
+  roles:
+    - xanmanning.k3s
+  tags: k3s
