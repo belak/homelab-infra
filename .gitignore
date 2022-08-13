@@ -1,7 +1,9 @@
-# Decrypted sops secrets
+# SOPS related files
 .decrypted*
 
 # Role downloaded by ansible-galaxy
 bootstrap/roles/xanmanning.k3s
 
+# General devenv files
 .python-version
+.env

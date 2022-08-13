@@ -1,19 +1,35 @@
 # homelab infra
 
-This repo was inspired by the k8s-at-home [flux-cluster-template](github.com/k8s-at-home/flux-cluster-template), but was built from scratch with a number of different design decisions.
+This repo was inspired by the k8s-at-home [flux-cluster-template](github.com/k8s-at-home/flux-cluster-template), but was built from scratch.
+
+## Bootstrap Procedure
+
+```sh
+# Create the flux-system namespace, so the sops-age secret has
+# somewhere to go
+kubectl create namespace flux-system
+
+# Upload the sops-age secret, used for decrypting secrets
+cat ~/.config/sops/age/keys.txt |
+  kubectl create secret generic sops-age \
+  --namespace=flux-system \
+  --from-file=age.agekey=/dev/stdin
+
+# Run the flux bootstrap command
+flux bootstrap git --url=ssh://git@github.com/belak/homelab-infra.git --branch=main --path=cluster/bootstrap --private-key-file=$HOME/.ssh/id_argocd --silent
+```
 
 ## Repo Structure
 
 - `bootstrap` - contains a set of ansible playbooks and other tools for deploying k3s to a set of hosts
-- `cluster` - contains a collection of namespaces
-- `cluster/core` - this deploys k8s-specific resources needed cluster-wide
-- `cluster/<namespace>` - each namespace folder contains separate folders for each application
-- `cluster/<namespace>/<application>` - each application folder contains the configuration needed to deploy that application
+- `cluster/bootstrap`
+- `cluster/secrets`
+- `cluster/<namespace>`
 
 ### Namespaces
 
-- `argocd`
 - `cert-manager`
+- `flux-system`
 - `longhorn-system`
 - `metalkb-system`
 - `traefik-system`
@@ -30,6 +46,8 @@ This repo was inspired by the k8s-at-home [flux-cluster-template](github.com/k8s
 
 - 192.168.42.1/24 - Physical hosts
 - 192.168.43.1/24 - Services
+- 10.42.0.0/16 - Internal K8S Pods
+- 10.43.0.0/16 - Internal K8S Services
 
 ## Exported Services
 

@@ -1,0 +1,50 @@
+---
+apiVersion: helm.toolkit.fluxcd.io/v2beta1
+kind: HelmRelease
+metadata:
+  name: traefik
+  namespace: traefik-system
+spec:
+  interval: 5m
+  chart:
+    spec:
+      # renovate: registryUrl=https://helm.traefik.io/traefik
+      chart: traefik
+      version: '10.24.0'
+      sourceRef:
+        kind: HelmRepository
+        name: traefik-charts
+        namespace: flux-system
+
+  dependsOn:
+  - name: cert-manager
+    namespace: cert-manager
+
+  values:
+    # Disable the dashboard, because we'll set it up elsewhere.
+    dashboard:
+      enabled: false
+
+    providers:
+      kubernetesIngress:
+        publishedService:
+          enabled: true
+
+    # Change log format to something more easily machine parsable.
+    logs:
+      general:
+        format: json
+      access:
+        enabled: true
+        format: json
+
+    # Grab an explicit external IP address for the k8s service definition.
+    service:
+      spec:
+        loadBalancerIP: "192.168.43.1"
+        externalTrafficPolicy: Local
+
+    # Override how a few of the ports are handled.
+    ports:
+      web:
+        redirectTo: websecure
