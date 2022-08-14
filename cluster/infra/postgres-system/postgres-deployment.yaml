@@ -1,0 +1,66 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: postgres
+  namespace: postgres-system
+  labels:
+    app.kubernetes.io/name: postgres
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: postgres
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: postgres
+    spec:
+      volumes:
+      - name: postgres-storage
+        persistentVolumeClaim:
+          claimName: postgres-pvc
+      containers:
+      - name: postgres
+        image: postgres:14.1
+        imagePullPolicy: IfNotPresent
+        ports:
+        - containerPort: 5432
+        env:
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: postgres-secrets
+              key: password
+
+        # These prevent some oddities down the road with some specific
+        # applications.
+        - name: POSTGRES_INITDB_ARGS
+          value: '--encoding=UTF-8 --lc-collate=C --lc-ctype=C'
+
+        # It's a little weird, but it's recommended to override PGDATA as a
+        # subdir of /var/lib/postgresql/data when using a potentially remote
+        # mount.
+        - name: PGDATA
+          value: /var/lib/postgresql/data/pgdata
+
+        # Mount the volume for PGDATA one level above so the directory can be
+        # properly created.
+        volumeMounts:
+        - mountPath: /var/lib/postgresql/data
+          name: postgres-storage
+
+        # It's "alive" if pg_isready succeeds
+        livenessProbe:
+          exec:
+            command:
+            - pg_isready
+            - -U
+            - postgres
+          initialDelaySeconds: 30
+          periodSeconds: 10
+
+        # For now, we want this on the primary node - at the very least we don't
+        # want it on a Pi.
+        nodeSelector:
+          kubernetes.io/hostname: zidane.elwert.dev

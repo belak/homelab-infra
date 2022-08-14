@@ -14,8 +14,13 @@ vivi.elwert.dev ansible_host=vivi.lan
 zidane.elwert.dev
 
 [k3s_worker_node]
-#kupo.elwert.dev
-#moguo.elwert.dev
-#monty.elwert.dev
-#stiltzkin.elwert.dev
-#vivi.elwert.dev
+kupo.elwert.dev
+moguo.elwert.dev
+monty.elwert.dev
+stiltzkin.elwert.dev
+vivi.elwert.dev
+
+# We run any postgres commands from the control node for simplicity since it
+# should always be up.
+[postgres]
+zidane.elwert.dev

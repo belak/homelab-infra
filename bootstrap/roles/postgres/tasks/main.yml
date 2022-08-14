@@ -1,0 +1,26 @@
+- name: install postgres support packages
+  apt:
+    pkg:
+    - libpq-dev
+    - python3-psycopg2
+    state: present
+
+- name: create postgres databases
+  postgresql_db:
+    login_password: '{{ postgres_admin_password }}'
+    login_host: '192.168.43.2'
+    name: '{{ item.user }}'
+  with_items: '{{ postgres_users }}'
+  loop_control:
+    label: '{{ item.user }}'
+
+- name: create postgres users
+  postgresql_user:
+    login_password: '{{ postgres_admin_password }}'
+    login_host: '192.168.43.2'
+    name: '{{ item.user }}'
+    db: '{{ item.user }}'
+    password: '{{ item.pass }}'
+  with_items: '{{ postgres_users }}'
+  loop_control:
+    label: '{{ item.user }}'

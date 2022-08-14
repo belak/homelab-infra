@@ -54,3 +54,4 @@ flux bootstrap git --url=ssh://git@github.com/belak/homelab-infra.git --branch=m
 Most services will only end up being cluster-internal, but we still need to expose a few services for external use.
 
 - 192.168.43.1 - Traefik - Exposed for port forwarding
+- 192.168.43.2 - Postgres - Exposed so Ansible can create databases and credentials

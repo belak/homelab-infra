@@ -1,9 +1,14 @@
 - hosts: all
   roles:
-    - common
+  - common
   tags: common
 
 - hosts: all
   roles:
-    - xanmanning.k3s
+  - xanmanning.k3s
   tags: k3s
+
+- hosts: postgres
+  roles:
+  - postgres
+  tags: [never, postgres]
