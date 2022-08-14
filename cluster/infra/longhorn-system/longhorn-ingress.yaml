@@ -23,20 +23,20 @@
 
 # ---
 # # TODO: make sure this is protected by... something.
-# apiVersion: traefik.containo.us/v1alpha1
-# kind: IngressRoute
-# metadata:
-#   name: longhorn-ingress
-#   namespace: longhorn-system
-# spec:
-#   routes:
-#     - match: Host(`longhorn.elwert.cloud`)
-#       kind: Rule
-#       services:
-#         - name: longhorn-frontend
-#           port: 80
-#   tls:
-#     secretName: longhorn-elwert-cloud-tls
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: longhorn-ingress
+  namespace: longhorn-system
+spec:
+  routes:
+    - match: Host(`longhorn.elwert.cloud`)
+      kind: Rule
+      services:
+        - name: longhorn-frontend
+          port: 80
+  tls:
+    secretName: longhorn-elwert-cloud-tls
 
 ---
 apiVersion: cert-manager.io/v1
