@@ -16,7 +16,7 @@ cat ~/.config/sops/age/keys.txt |
   --from-file=age.agekey=/dev/stdin
 
 # Run the flux bootstrap command
-flux bootstrap git --url=ssh://git@github.com/belak/homelab-infra.git --branch=main --path=cluster/bootstrap --private-key-file=$HOME/.ssh/id_argocd --silent
+flux bootstrap git --url=ssh://git@github.com/belak/homelab-infra.git --branch=main --path=cluster/bootstrap --private-key-file=$HOME/.ssh/id_flux --silent
 ```
 
 ## Repo Structure
