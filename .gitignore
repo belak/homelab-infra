@@ -2,7 +2,7 @@
 .decrypted*
 
 # Role downloaded by ansible-galaxy
-bootstrap/roles/xanmanning.k3s
+ansible/roles/xanmanning.k3s
 
 # General devenv files
 .python-version
